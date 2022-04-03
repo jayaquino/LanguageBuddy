@@ -8,7 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		23D53A4A26098D1497A961C5 /* Pods_Language_Buddy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1A0897157BD20F342857635 /* Pods_Language_Buddy.framework */; };
+		52045A1427F19563008A2B81 /* AvailabilityCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52045A1227F19562008A2B81 /* AvailabilityCell.swift */; };
+		52045A1527F19563008A2B81 /* AvailabilityCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52045A1327F19562008A2B81 /* AvailabilityCell.xib */; };
+		52045A1727F1AC25008A2B81 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52045A1627F1AC25008A2B81 /* Comment.swift */; };
 		5233DBBF27EF051F00DE821F /* MapVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DBBE27EF051E00DE821F /* MapVC.swift */; };
+		5233DBC127F03A4F00DE821F /* AuthVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DBC027F03A4F00DE821F /* AuthVC.swift */; };
+		5233DBC327F0507500DE821F /* UserInfoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DBC227F0507500DE821F /* UserInfoVC.swift */; };
+		5233DBC527F05E5700DE821F /* PreferencesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DBC427F05E5700DE821F /* PreferencesVC.swift */; };
+		5233DBC727F0611900DE821F /* CurrentUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DBC627F0611900DE821F /* CurrentUser.swift */; };
+		5233DBCA27F0728600DE821F /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5233DBC827F0728600DE821F /* MessageCell.swift */; };
+		5233DBCB27F0728600DE821F /* MessageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5233DBC927F0728600DE821F /* MessageCell.xib */; };
 		5256586D27ED943F001961B2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5256586C27ED943F001961B2 /* AppDelegate.swift */; };
 		5256586F27ED943F001961B2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5256586E27ED943F001961B2 /* SceneDelegate.swift */; };
 		5256587127ED943F001961B2 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5256587027ED943F001961B2 /* HomeVC.swift */; };
@@ -25,7 +34,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		52045A1227F19562008A2B81 /* AvailabilityCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailabilityCell.swift; sourceTree = "<group>"; };
+		52045A1327F19562008A2B81 /* AvailabilityCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AvailabilityCell.xib; sourceTree = "<group>"; };
+		52045A1627F1AC25008A2B81 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		5233DBBE27EF051E00DE821F /* MapVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapVC.swift; sourceTree = "<group>"; };
+		5233DBC027F03A4F00DE821F /* AuthVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthVC.swift; sourceTree = "<group>"; };
+		5233DBC227F0507500DE821F /* UserInfoVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoVC.swift; sourceTree = "<group>"; };
+		5233DBC427F05E5700DE821F /* PreferencesVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesVC.swift; sourceTree = "<group>"; };
+		5233DBC627F0611900DE821F /* CurrentUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUser.swift; sourceTree = "<group>"; };
+		5233DBC827F0728600DE821F /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
+		5233DBC927F0728600DE821F /* MessageCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageCell.xib; sourceTree = "<group>"; };
 		5256586927ED943F001961B2 /* Language Buddy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Language Buddy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5256586C27ED943F001961B2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5256586E27ED943F001961B2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -105,10 +123,13 @@
 		5256588227ED961B001961B2 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				5233DBC027F03A4F00DE821F /* AuthVC.swift */,
+				5233DBC227F0507500DE821F /* UserInfoVC.swift */,
 				5256587027ED943F001961B2 /* HomeVC.swift */,
 				5256588727ED98B9001961B2 /* DetailsVC.swift */,
 				5256589927EDC716001961B2 /* CommentsVC.swift */,
 				5233DBBE27EF051E00DE821F /* MapVC.swift */,
+				5233DBC427F05E5700DE821F /* PreferencesVC.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -117,6 +138,10 @@
 			isa = PBXGroup;
 			children = (
 				5256587227ED943F001961B2 /* Main.storyboard */,
+				5233DBC827F0728600DE821F /* MessageCell.swift */,
+				5233DBC927F0728600DE821F /* MessageCell.xib */,
+				52045A1227F19562008A2B81 /* AvailabilityCell.swift */,
+				52045A1327F19562008A2B81 /* AvailabilityCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -127,6 +152,8 @@
 				5256588527ED97D0001961B2 /* Availability.swift */,
 				5256588927EDA4A2001961B2 /* FirebaseManager.swift */,
 				5256588D27EDA664001961B2 /* Protocols.swift */,
+				52045A1627F1AC25008A2B81 /* Comment.swift */,
+				5233DBC627F0611900DE821F /* CurrentUser.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -199,6 +226,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52045A1527F19563008A2B81 /* AvailabilityCell.xib in Resources */,
+				5233DBCB27F0728600DE821F /* MessageCell.xib in Resources */,
 				5256587927ED9445001961B2 /* LaunchScreen.storyboard in Resources */,
 				5256587627ED9445001961B2 /* Assets.xcassets in Resources */,
 				5256588C27EDA521001961B2 /* GoogleService-Info.plist in Resources */,
@@ -260,11 +289,18 @@
 				5256588A27EDA4A2001961B2 /* FirebaseManager.swift in Sources */,
 				5256588127ED95BA001961B2 /* K.swift in Sources */,
 				5256589A27EDC716001961B2 /* CommentsVC.swift in Sources */,
+				52045A1727F1AC25008A2B81 /* Comment.swift in Sources */,
+				5233DBC127F03A4F00DE821F /* AuthVC.swift in Sources */,
 				5233DBBF27EF051F00DE821F /* MapVC.swift in Sources */,
 				5256586D27ED943F001961B2 /* AppDelegate.swift in Sources */,
 				5256588627ED97D0001961B2 /* Availability.swift in Sources */,
 				5256586F27ED943F001961B2 /* SceneDelegate.swift in Sources */,
 				5256588E27EDA664001961B2 /* Protocols.swift in Sources */,
+				5233DBCA27F0728600DE821F /* MessageCell.swift in Sources */,
+				52045A1427F19563008A2B81 /* AvailabilityCell.swift in Sources */,
+				5233DBC527F05E5700DE821F /* PreferencesVC.swift in Sources */,
+				5233DBC727F0611900DE821F /* CurrentUser.swift in Sources */,
+				5233DBC327F0507500DE821F /* UserInfoVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,7 +376,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -394,7 +430,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -432,7 +468,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -464,7 +500,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

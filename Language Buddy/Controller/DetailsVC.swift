@@ -6,35 +6,48 @@
 //
 
 import UIKit
+import CoreLocation
+import Firebase
 
 class DetailsVC: UIViewController {
-
+    
     @IBOutlet weak var languageTextField: UITextField!
     @IBOutlet weak var locationTextField: UITextField!
-    @IBOutlet weak var addressTextField: UITextField!
-    @IBOutlet weak var arrivalTimeButton: UIButton!
     @IBOutlet weak var departureTimeButton: UIButton!
     
-    var latitude : Double?
-    var longitude : Double?
+    var location : CLLocation?
     var delegate : isAbleToReceiveData?
-    
-
+    let currentUser = CurrentUser()
+    var address = String()
+    var selectedDepartureDate = Double()
     
     //MARK: - IBActions
     @IBAction func addAvailabilityPressed(_ sender: UIButton) {
         
-        if languageTextField.text != "" && locationTextField.text != "" && addressTextField.text != "" && arrivalTimeButton.currentTitle != nil && departureTimeButton.currentTitle != nil {
-            if let location = locationTextField.text, let address = addressTextField.text, let language = languageTextField.text, let arrival = arrivalTimeButton.titleLabel?.text, let departure = departureTimeButton.titleLabel?.text {
-                delegate!.pass(availability: Availability(targetLanguage: language, locationName: location, address: address, arrivalTime: arrival, departureTime: departure, latitude: latitude!, longitude: longitude!, doc: nil))
+        if languageTextField.text != "" && locationTextField.text != "" && departureTimeButton.currentTitle != nil {
+            
+            if let location = locationTextField.text, let language = languageTextField.text, let geolocation = self.location, let email = Auth.auth().currentUser?.email {
+    
+                let geocoder = CLGeocoder()
+                // Look up the location and pass it to the completion handler
+                geocoder.reverseGeocodeLocation(geolocation,
+                            completionHandler: { (placemarks, error) in
+                    if error == nil {
+                        if let firstAddress = placemarks?[0]{
+                            self.address = firstAddress.thoroughfare ?? "empty"
+                            print(self.address)
+                            self.delegate!.pass(availability: Availability(email: email, username: self.currentUser.username, targetLanguage: language, locationName: location, address: self.address, arrivalTime: Date().timeIntervalSince1970, departureTime: self.selectedDepartureDate, latitude: geolocation.coordinate.latitude, longitude: geolocation.coordinate.longitude, doc: nil))
+                            self.dismiss(animated: true)
+                        }
+                    }
+                })
             }
-            self.dismiss(animated: true)
-        } else {
-            let alert = UIAlertController(title: "Complete All Fields", message: "", preferredStyle: .alert)
-            let action = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
-            alert.addAction(action)
-            present(alert, animated: true)
-        }
+            } else {
+                let alert = UIAlertController(title: "Complete All Fields", message: "", preferredStyle: .alert)
+                let action = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+                alert.addAction(action)
+                present(alert, animated: true)
+            }
     }
     
     @IBAction func setTimeTapped(_ sender: UIButton) {
@@ -56,9 +69,11 @@ class DetailsVC: UIViewController {
         
         let action = UIAlertAction(title: "Set", style: .default) { action in
             let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "HH:mm"
+            dateFormatter.dateFormat = "yyyy-MM-dd, HH:mm"
             let strDate = dateFormatter.string(from: timePickerView.date)
-            sender.setTitle(strDate, for: .normal)
+            sender.setTitle(String(strDate.split(separator: " ")[1]), for: .normal)
+            
+            self.selectedDepartureDate = timePickerView.date.timeIntervalSince1970
         }
         
         alert.addAction(action)
@@ -68,11 +83,13 @@ class DetailsVC: UIViewController {
     //MARK: - Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-           
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true) //This will hide the keyboard
     }
+    
+
 }
 

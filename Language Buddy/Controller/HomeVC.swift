@@ -7,10 +7,13 @@
 
 import UIKit
 import CoreLocation
+import MapKit
 
 class HomeVC: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var toDetails: UIBarButtonItem!
+    @IBOutlet weak var toMap: UIBarButtonItem!
     
     private let locationManager = CLLocationManager()
     private let time = Date()
@@ -33,7 +36,19 @@ class HomeVC: UIViewController {
         // Table View
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.rowHeight = 200
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(sender:)))
+        tableView.addGestureRecognizer(longPress)
         
+        // Nib
+        tableView.register(UINib(nibName: "AvailabilityCell", bundle: nil), forCellReuseIdentifier: "ReusableCell")
+        
+        // UI Handling
+        toMap.isEnabled = false
+        toDetails.isEnabled = false
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         // Firebase
         loadData()
     }
@@ -47,7 +62,6 @@ class HomeVC: UIViewController {
                 let distance = self.location.distance(from: cellLocation)
                 if distance > 10000 {
                     availabilitiesVariable.remove(at: i)
-                    print("removed since distance is \(distance)")
                 }
             }
             self.availabilityArray = availabilitiesVariable
@@ -57,11 +71,9 @@ class HomeVC: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == K.toDetails {
-            print("arrived in VC")
             let destinationVC = segue.destination as! DetailsVC
             destinationVC.delegate = self
-            destinationVC.latitude = self.lat
-            destinationVC.longitude = self.lon
+            destinationVC.location = location
         }
         else if segue.identifier == K.toComments {
             if let sender = sender as? IndexPath {
@@ -81,14 +93,20 @@ class HomeVC: UIViewController {
 //MARK: - Table View Delegate and Data Source
 extension HomeVC : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "toComments", sender: indexPath)
+        if tableView.cellForRow(at: indexPath) is AvailabilityCell {
+            performSegue(withIdentifier: "toComments", sender: indexPath)
+        }
         tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
 extension HomeVC : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return availabilityArray.count
+        if toDetails.isEnabled {
+            return availabilityArray.count
+        } else {
+            return 1
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -97,18 +115,75 @@ extension HomeVC : UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        // Location
-        let cellLocation = CLLocation(latitude: (availabilityArray[indexPath.row].latitude), longitude: availabilityArray[indexPath.row].longitude)
-        let distance = self.location.distance(from: cellLocation)
-        
-        // Cell Details
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ReusableCell", for: indexPath)
-        cell.textLabel?.text = "Language — " + availabilityArray[indexPath.row].targetLanguage + "\n" + "Location — "+availabilityArray[indexPath.row].locationName + "\n" + "Distance — \(round(distance*100)/100.0) m"
+        if toDetails.isEnabled {
+            // Location
+            let cellLocation = CLLocation(latitude: (availabilityArray[indexPath.row].latitude), longitude: availabilityArray[indexPath.row].longitude)
+            let distance = self.location.distance(from: cellLocation)
+            
+            // Cell Details
+            let cell = tableView.dequeueReusableCell(withIdentifier: "ReusableCell", for: indexPath) as! AvailabilityCell
+            cell.userLabel.text = availabilityArray[indexPath.row].username
+            cell.languageLabel.text = availabilityArray[indexPath.row].targetLanguage
+            let formatter = DateFormatter()
+            formatter.dateFormat = "HH:mm"
+            let t0 = formatter.string(from:Date(timeIntervalSince1970: availabilityArray[indexPath.row].arrivalTime))
+            let t1 = formatter.string(from: Date(timeIntervalSince1970: availabilityArray[indexPath.row].departureTime))
+            let time = t0 + " - " + t1
+            cell.timeLabel.text =  time
+            cell.locationLabel.text = availabilityArray[indexPath.row].locationName
+            cell.distanceLabel.text = String(round(CGFloat(distance)*10)/10) + " m"
+            
+            cell.languageLabel.numberOfLines = 0
+            cell.userLabel.numberOfLines = 0
+            cell.timeLabel.numberOfLines = 0
+            
+            cell.selectionStyle = .none
+            
+            return cell
+        } else {
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "DefaultCell", for: indexPath)
+            cell.textLabel?.numberOfLines = 0
+            cell.textLabel?.textAlignment = .center
+            cell.textLabel?.text = "Please enable location services to use features"
+            return cell
+        }
+    }
     
-        cell.textLabel?.font = UIFont(name: "Gill Sans", size: 15)
-        cell.textLabel?.numberOfLines = 0
-        
-        return cell
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        UIView.animate(
+            withDuration: 2.0,
+            delay: 1.0 * Double(indexPath.row),
+                        animations: {
+                            cell.alpha = 1
+                    })
+    }
+    
+    @objc private func handleLongPress(sender: UILongPressGestureRecognizer) {
+        if sender.state == .began {
+            let touchPoint = sender.location(in: tableView)
+            if let indexPath = tableView.indexPathForRow(at: touchPoint) {
+                if tableView.cellForRow(at: indexPath) is AvailabilityCell {
+                    tableView.deselectRow(at: indexPath, animated: true)
+                    openmaps(latitude: availabilityArray[indexPath.row].latitude, longitude: availabilityArray[indexPath.row].longitude)
+                }
+            }
+        }
+    }
+    
+    func openmaps(latitude: Double, longitude: Double) {
+        let latitude: CLLocationDegrees = Double(latitude)
+        let longitude: CLLocationDegrees = Double(longitude)
+        let regionDistance:CLLocationDistance = 10000
+        let coordinates = CLLocationCoordinate2DMake(latitude, longitude)
+        let regionSpan = MKCoordinateRegion(center: coordinates, latitudinalMeters: regionDistance, longitudinalMeters: regionDistance)
+        let options = [
+            MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: regionSpan.center),
+            MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: regionSpan.span)
+        ]
+        let placemark = MKPlacemark(coordinate: coordinates, addressDictionary: nil)
+        let mapItem = MKMapItem(placemark: placemark)
+        mapItem.openInMaps(launchOptions: options)
     }
 }
 
@@ -119,10 +194,24 @@ extension HomeVC: CLLocationManagerDelegate {
             self.location = location
             self.lat = location.coordinate.latitude
             self.lon = location.coordinate.longitude
-            locationManager.stopUpdatingLocation()
             loadData()
+            toDetails.isEnabled = true
+            toMap.isEnabled = true
+            manager.stopUpdatingLocation()
         }
     }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        if manager.authorizationStatus == .denied {
+            toDetails.isEnabled = false
+            toMap.isEnabled = false
+        } else {
+            toDetails.isEnabled = true
+            toMap.isEnabled = true
+        }
+        tableView.reloadData()
+    }
+
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print(error)
