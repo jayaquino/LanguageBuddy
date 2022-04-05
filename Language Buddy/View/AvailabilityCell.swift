@@ -15,6 +15,8 @@ class AvailabilityCell: UITableViewCell {
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var distanceLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
+    @IBOutlet weak var profileImage: UIImageView!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -24,6 +26,7 @@ class AvailabilityCell: UITableViewCell {
         cellView.layer.shadowOffset = .zero
         cellView.layer.shadowRadius = 1
         cellView.layer.cornerRadius = cellView.frame.height/5
+        
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -68,7 +69,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Comments" id="ifN-4d-IwG">
-                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="trash" id="LZ0-46-uj7">
+                        <barButtonItem key="rightBarButtonItem" systemItem="trash" id="LZ0-46-uj7">
                             <color key="tintColor" systemColor="labelColor"/>
                             <connections>
                                 <action selector="deletePressed:" destination="VaB-rG-qtV" id="cRS-fL-S3X"/>
@@ -170,7 +171,7 @@
                                 </connections>
                             </barButtonItem>
                         </leftBarButtonItems>
-                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="add" id="kM3-LA-NO0">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="kM3-LA-NO0">
                             <color key="tintColor" systemColor="labelColor"/>
                             <connections>
                                 <segue destination="1Ip-gC-njZ" kind="presentation" identifier="toDetails" id="f2h-qZ-Htc"/>
@@ -447,6 +448,15 @@
                                     <action selector="deleteAccountPressed:" destination="TUu-X8-Ppf" eventType="touchUpInside" id="uCA-rn-36J"/>
                                 </connections>
                             </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="CZC-PB-QBw">
+                                <rect key="frame" x="132" y="75.5" width="150" height="147.5"/>
+                                <color key="tintColor" systemColor="labelColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="150" id="K0u-4R-KRw"/>
+                                    <constraint firstAttribute="width" constant="150" id="mCg-Cd-PsP"/>
+                                </constraints>
+                                <imageReference key="image" image="person" catalog="system" symbolScale="default"/>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="taE-29-ZsE"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -455,10 +465,13 @@
                             <constraint firstItem="taE-29-ZsE" firstAttribute="trailing" secondItem="2eG-S1-mg4" secondAttribute="trailing" constant="20" id="5zW-Ro-9aW"/>
                             <constraint firstItem="XTu-89-K8r" firstAttribute="centerY" secondItem="8Ef-vk-4RX" secondAttribute="centerY" id="BwD-FN-Qif"/>
                             <constraint firstItem="taE-29-ZsE" firstAttribute="bottom" secondItem="2eG-S1-mg4" secondAttribute="bottom" constant="20" id="Ct5-pO-UkF"/>
+                            <constraint firstItem="CZC-PB-QBw" firstAttribute="centerX" secondItem="8Ef-vk-4RX" secondAttribute="centerX" id="GkI-iP-MkC"/>
+                            <constraint firstItem="CZC-PB-QBw" firstAttribute="top" secondItem="taE-29-ZsE" secondAttribute="top" constant="30" id="sjQ-4K-Bre"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="anonymousSwitch" destination="oxd-8g-Nkm" id="8QK-XQ-EqG"/>
+                        <outlet property="imageView" destination="CZC-PB-QBw" id="j2B-7B-Hb7"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4xR-Yr-lDq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -488,6 +501,7 @@
     <resources>
         <image name="arrowshape.turn.up.left" catalog="system" width="128" height="106"/>
         <image name="gearshape" catalog="system" width="128" height="121"/>
+        <image name="person" catalog="system" width="128" height="117"/>
         <image name="person.2" catalog="system" width="128" height="81"/>
         <namedColor name="Color-1">
             <color red="0.9570000171661377" green="0.81999999284744263" blue="0.60799998044967651" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

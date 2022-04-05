@@ -15,6 +15,9 @@ struct K {
 
     struct FStore {
         static let availabilityCollectionName : String = "availability"
+        static let availabilityChatCollectionName : String = "availabilityChat"
+        static let availabilityDocID : String = "availabilityDocID"
+        
         static let commentsCollectionName : String = "comments"
         static let targetLanguage : String = "language"
         static let email : String = "email"

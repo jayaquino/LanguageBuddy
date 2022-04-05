@@ -8,6 +8,7 @@
 import Foundation
 import Firebase
 import UIKit
+import FirebaseStorage
 
 struct FirebaseManager {
     
@@ -126,7 +127,6 @@ struct FirebaseManager {
     }
     
     func deleteAvailability(documentID: String) {
-        print("deleting")
         database.collection(K.FStore.availabilityCollectionName).document(documentID).delete()
     }
     
@@ -189,6 +189,15 @@ struct FirebaseManager {
         }
     }
     
+    func getEmail() -> String {
+        if let email = Auth.auth().currentUser?.email{
+            return email
+        } else {
+            print("Error in getting email")
+            return ""
+        }
+    }
+    
     //MARK: - Functions
     func presentErrorAlert(errorMessage: String, sender: UIViewController) {
         let alert = UIAlertController(title: "Error", message: errorMessage, preferredStyle: .alert)
@@ -196,4 +205,65 @@ struct FirebaseManager {
         alert.addAction(action)
         sender.present(alert, animated: true)
     }
+    
+    //MARK: - Firebase Storage
+    func uploadImage(img: UIImage) {
+        print("uploading img")
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let imgDataResize = img.resizeWithPercent(percentage: 0.1)
+        let imgData = imgDataResize!.jpeg(.lowest)
+        // Create a reference to the file you want to upload
+        let profilePhoto = storageRef.child("images/\(getEmail()).jpg")
+
+        // Upload the file to the path "images/{email}.jpg"
+        profilePhoto.putData(imgData!, metadata: nil) { (metadata, error) in
+          guard let metadata = metadata else {
+              print(error?.localizedDescription)
+            return
+          }
+        }
+    
+    }
+    
+    func loadImage(user: String,completion: @escaping (UIImage) -> ()) {
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let profilePhoto = storageRef.child("images/\(user).jpg")
+        profilePhoto.getData(maxSize: 20000000) { data, error in
+          if let error = error {
+              print(error.localizedDescription)
+          } else {
+              if let image = UIImage(data: data!) {
+              completion(image)
+              }
+          }
+        }
+    }
+}
+
+extension UIImage {
+    enum JPEGQuality: CGFloat {
+        case lowest  = 0.001
+        case low     = 0.25
+        case medium  = 0.5
+        case high    = 0.75
+        case highest = 1
+    }
+
+    func jpeg(_ jpegQuality: JPEGQuality) -> Data? {
+        return jpegData(compressionQuality: jpegQuality.rawValue)
+    }
+    
+    func resizeWithPercent(percentage: CGFloat) -> UIImage? {
+            let imageView = UIImageView(frame: CGRect(origin: .zero, size: CGSize(width: size.width * percentage, height: size.height * percentage)))
+        imageView.contentMode = .scaleAspectFit
+            imageView.image = self
+            UIGraphicsBeginImageContextWithOptions(imageView.bounds.size, false, scale)
+            guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        imageView.layer.render(in: context)
+            guard let result = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
+            UIGraphicsEndImageContext()
+            return result
+        }
 }

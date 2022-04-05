@@ -11,6 +11,8 @@ target 'Language Buddy' do
 
 pod 'Firebase/Firestore'
 pod 'Firebase/Auth'
+pod 'Firebase/Storage'
+pod 'Firebase/Messaging'
 pod 'IQKeyboardManagerSwift', '6.3.0'
 pod 'PaddingLabel', '1.2'
 

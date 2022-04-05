@@ -8,6 +8,7 @@
 import UIKit
 import CoreLocation
 import MapKit
+import FirebaseMessaging
 
 class HomeVC: UIViewController {
 
@@ -46,6 +47,7 @@ class HomeVC: UIViewController {
         // UI Handling
         toMap.isEnabled = false
         toDetails.isEnabled = false
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -124,6 +126,7 @@ extension HomeVC : UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ReusableCell", for: indexPath) as! AvailabilityCell
             cell.userLabel.text = availabilityArray[indexPath.row].username
             cell.languageLabel.text = availabilityArray[indexPath.row].targetLanguage
+            cell.profileImage.layer.cornerRadius = cell.profileImage.frame.height/2
             let formatter = DateFormatter()
             formatter.dateFormat = "HH:mm"
             let t0 = formatter.string(from:Date(timeIntervalSince1970: availabilityArray[indexPath.row].arrivalTime))
@@ -138,6 +141,12 @@ extension HomeVC : UITableViewDataSource {
             cell.timeLabel.numberOfLines = 0
             
             cell.selectionStyle = .none
+            
+            firebaseManager.loadImage(user: availabilityArray[indexPath.row].email) { profileImage in
+                cell.profileImage.image = profileImage
+                cell.profileImage.layer.cornerRadius = cell.profileImage.frame.height/2
+            }
+            
             
             return cell
         } else {

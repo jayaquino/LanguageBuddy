@@ -7,11 +7,13 @@
 
 import UIKit
 
-class PreferencesVC: UIViewController {
+class PreferencesVC: UIViewController, UINavigationControllerDelegate {
 
+    @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var anonymousSwitch: UISwitch!
     
     let firebaseManager = FirebaseManager()
+    var imagePicker = UIImagePickerController()
     
     @IBAction func anonymousSwitchPressed(_ sender: UISwitch) {
         let defaults = UserDefaults.standard
@@ -34,5 +36,46 @@ class PreferencesVC: UIViewController {
         super.viewDidLoad()
         let defaults = UserDefaults.standard
         anonymousSwitch.isOn = defaults.object(forKey: "anonymous") as? Bool ?? false
+
+        // Image View Gesture
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
+            imageView.isUserInteractionEnabled = true
+            imageView.addGestureRecognizer(tapGestureRecognizer)
+        
+        imageView.layer.masksToBounds = false
+        imageView.layer.cornerRadius = imageView.frame.height/2
+        imageView.clipsToBounds = true
+        
+        firebaseManager.loadImage(user: firebaseManager.getEmail()) { profileImage in
+            self.imageView.image = profileImage
+        }
+        
+    }
+    
+    @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer)
+    {
+        if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum){
+            imagePicker.delegate = self
+            imagePicker.sourceType = .savedPhotosAlbum
+            imagePicker.allowsEditing = false
+            
+            present(imagePicker, animated: true, completion: nil)
+            
+            
+        }
+        
     }
 }
+
+extension PreferencesVC : UIImagePickerControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let img = info[.originalImage] {
+            imageView.image = img as? UIImage
+            firebaseManager.uploadImage(img: imageView.image!)
+        }
+       
+        picker.dismiss(animated: true)
+    }
+}
+
+
