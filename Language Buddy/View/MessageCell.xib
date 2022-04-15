@@ -22,8 +22,8 @@
                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="xB0-0u-hgc">
                         <rect key="frame" x="20" y="20" width="196" height="48"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="GlY-KQ-WHi">
-                                <rect key="frame" x="0.0" y="0.0" width="61" height="30"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="GlY-KQ-WHi">
+                                <rect key="frame" x="0.0" y="0.0" width="71" height="20"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="person" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="zWY-Fm-Si5">
                                         <rect key="frame" x="0.0" y="1.5" width="20" height="17.5"/>
@@ -33,8 +33,8 @@
                                             <constraint firstAttribute="width" constant="20" id="hqq-7O-cro"/>
                                         </constraints>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="249" verticalHuggingPriority="249" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rCe-uB-Yg6">
-                                        <rect key="frame" x="30" y="0.0" width="31" height="14.5"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="249" verticalHuggingPriority="249" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rCe-uB-Yg6" customClass="PaddingLabel" customModule="PaddingLabel">
+                                        <rect key="frame" x="40" y="0.0" width="31" height="14.5"/>
                                         <color key="backgroundColor" name="Color-2"/>
                                         <constraints>
                                             <constraint firstAttribute="width" relation="lessThanOrEqual" constant="100" id="ZE8-Qd-4VT"/>
@@ -52,6 +52,9 @@
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
+                        <constraints>
+                            <constraint firstItem="qL1-zd-LBJ" firstAttribute="top" secondItem="GlY-KQ-WHi" secondAttribute="bottom" constant="10" id="nl2-kz-Q2S"/>
+                        </constraints>
                     </stackView>
                 </subviews>
                 <constraints>
@@ -64,16 +67,12 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="messageLabel" destination="qL1-zd-LBJ" id="1bK-sC-Kre"/>
+                <outlet property="profileImg" destination="zWY-Fm-Si5" id="Zu3-Cx-FqD"/>
                 <outlet property="usernameLabel" destination="rCe-uB-Yg6" id="gcd-pd-Wns"/>
             </connections>
             <point key="canvasLocation" x="-77" y="114"/>
         </tableViewCell>
     </objects>
-    <designables>
-        <designable name="rCe-uB-Yg6">
-            <size key="intrinsicContentSize" width="31" height="14.5"/>
-        </designable>
-    </designables>
     <resources>
         <image name="person" catalog="system" width="128" height="117"/>
         <namedColor name="Color-2">

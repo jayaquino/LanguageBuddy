@@ -13,6 +13,7 @@ import FirebaseStorage
 struct FirebaseManager {
     
     let database = Firestore.firestore()
+    let currentUser = CurrentUser()
     
     //MARK: - Authentication
     func login(email: String, password: String, sender: UIViewController) {
@@ -93,6 +94,7 @@ struct FirebaseManager {
             .order(by: K.FStore.date, descending: true)
             .addSnapshotListener { querySnapShot, error in
                 var availabilities : [Availability] = []
+                var profilePictures : [UIImage] = []
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "HH:mm"
                 let currentTime = Date().timeIntervalSince1970
@@ -126,12 +128,27 @@ struct FirebaseManager {
             }
     }
     
+    func loadAvailabilityProfileImg(availabilities: [Availability], completion: @escaping ([UIImage]) -> ()) {
+        var profileImgs : [UIImage] = []
+        for i in availabilities {
+            if i.username == "Anonymous" {
+                profileImgs.append(UIImage(systemName: "person")!)
+            } else {
+                loadImage(user: i.email) { img in
+                    profileImgs.append(img)
+                }
+            }
+        }
+        completion(profileImgs)
+    }
+    
     func deleteAvailability(documentID: String) {
         database.collection(K.FStore.availabilityCollectionName).document(documentID).delete()
     }
     
     func addComment(comment: Comment, document: String, completion: @escaping () -> ()) {
         database.collection(document).addDocument(data: [
+            K.FStore.email : comment.email,
             K.FStore.comment : comment.message,
             K.FStore.username : comment.username,
             K.FStore.date : Date().timeIntervalSince1970]) {error in
@@ -152,8 +169,9 @@ struct FirebaseManager {
                     for doc in snapShotDocuments{
                         let data = doc.data()
                         if let username = data[K.FStore.username] as? String,
-                           let message = data[K.FStore.comment] as? String {
-                            let comment = Comment(username: username, message: message)
+                           let message = data[K.FStore.comment] as? String,
+                           let email = data[K.FStore.email] as? String {
+                            let comment = Comment(email: email, username: username, message: message)
                             comments.append(comment)
                         }
                     }
@@ -211,13 +229,12 @@ struct FirebaseManager {
         print("uploading img")
         let storage = Storage.storage()
         let storageRef = storage.reference()
-        let imgDataResize = img.resizeWithPercent(percentage: 0.1)
-        let imgData = imgDataResize!.jpeg(.lowest)
-        // Create a reference to the file you want to upload
+        let profileImgResize = img.resizeWithPercent(percentage: 0.3)
+        let profileImgData = profileImgResize!.jpeg(.low)
         let profilePhoto = storageRef.child("images/\(getEmail()).jpg")
 
-        // Upload the file to the path "images/{email}.jpg"
-        profilePhoto.putData(imgData!, metadata: nil) { (metadata, error) in
+       
+        profilePhoto.putData(profileImgData!, metadata: nil) { (metadata, error) in
           guard let metadata = metadata else {
               print(error?.localizedDescription)
             return

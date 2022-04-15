@@ -11,6 +11,7 @@ class MessageCell: UITableViewCell {
 
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var messageLabel: UILabel!
+    @IBOutlet weak var profileImg: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()

@@ -7,6 +7,7 @@
 
 import UIKit
 import Firebase
+import IQKeyboardManagerSwift
 
 class CommentsVC: UIViewController {
 
@@ -19,7 +20,7 @@ class CommentsVC: UIViewController {
     
     @IBAction func sendPressed(_ sender: UIButton) {
         if textField.text != "" {
-            firebaseManager.addComment(comment: Comment(username: currentUser.username, message: textField.text!), document: (availability?.doc!)!) {
+            firebaseManager.addComment(comment: Comment(email: currentUser.email, username: currentUser.username, message: textField.text!), document: (availability?.doc!)!) {
             }
             textField.text = ""
         }
@@ -38,6 +39,7 @@ class CommentsVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    
         if let email = Auth.auth().currentUser?.email, let availabilityEmail = availability?.email {
             if email == availabilityEmail {
                 deleteButton.isEnabled = true
@@ -47,7 +49,6 @@ class CommentsVC: UIViewController {
         }
         title = availability?.locationName
         tableView.dataSource = self
-        tableView.transform = CGAffineTransform(scaleX: 1, y: -1);
         tableView.register(UINib(nibName: "MessageCell", bundle: nil), forCellReuseIdentifier: "ReusableCell")
         textField.delegate = self
         firebaseManager.loadComment(document: (availability?.doc)!) { comments in
@@ -70,14 +71,18 @@ extension CommentsVC : UITableViewDataSource {
         cell.usernameLabel.text = comments[(comments.count-1) - indexPath.row].username
         cell.messageLabel.text = comments[(comments.count-1) - indexPath.row].message
         cell.messageLabel.numberOfLines = 0
-        cell.transform = CGAffineTransform(scaleX: 1, y: -1)
+        
+        if comments[(comments.count-1) - indexPath.row].email == currentUser.email {
+            cell.usernameLabel.backgroundColor = .systemPink
+        }
+        
         return cell
     }
 }
 
 extension CommentsVC : UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        firebaseManager.addComment(comment: Comment(username: currentUser.username, message: textField.text!), document: (availability?.doc!)!) {
+        firebaseManager.addComment(comment: Comment(email: currentUser.email, username: currentUser.username, message: textField.text!), document: (availability?.doc!)!) {
             print("comment added")
         }
         textField.text = ""

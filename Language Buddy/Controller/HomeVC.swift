@@ -24,6 +24,8 @@ class HomeVC: UIViewController {
     private var location = CLLocation()
     private let firebaseManager = FirebaseManager()
     private var availabilityArray : [Availability] = []
+
+    let imageCache = NSCache<AnyObject, AnyObject>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,17 +46,13 @@ class HomeVC: UIViewController {
         // Nib
         tableView.register(UINib(nibName: "AvailabilityCell", bundle: nil), forCellReuseIdentifier: "ReusableCell")
         
-        // UI Handling
-        toMap.isEnabled = false
         toDetails.isEnabled = false
-        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         // Firebase
         loadData()
     }
-    
     func loadData(){
         
         firebaseManager.loadAvailability { availabilities in
@@ -90,6 +88,7 @@ class HomeVC: UIViewController {
         }
         
     }
+    
 }
 
 //MARK: - Table View Delegate and Data Source
@@ -100,6 +99,7 @@ extension HomeVC : UITableViewDelegate {
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
 }
 
 extension HomeVC : UITableViewDataSource {
@@ -110,6 +110,7 @@ extension HomeVC : UITableViewDataSource {
             return 1
         }
     }
+    
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -126,7 +127,8 @@ extension HomeVC : UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ReusableCell", for: indexPath) as! AvailabilityCell
             cell.userLabel.text = availabilityArray[indexPath.row].username
             cell.languageLabel.text = availabilityArray[indexPath.row].targetLanguage
-            cell.profileImage.layer.cornerRadius = cell.profileImage.frame.height/2
+            cell.profileImage.image = UIImage(systemName: "person")
+            cell.profileImage.layer.cornerRadius = cell.profileImage.frame.height/5
             let formatter = DateFormatter()
             formatter.dateFormat = "HH:mm"
             let t0 = formatter.string(from:Date(timeIntervalSince1970: availabilityArray[indexPath.row].arrivalTime))
@@ -142,13 +144,25 @@ extension HomeVC : UITableViewDataSource {
             
             cell.selectionStyle = .none
             
-            firebaseManager.loadImage(user: availabilityArray[indexPath.row].email) { profileImage in
-                cell.profileImage.image = profileImage
-                cell.profileImage.layer.cornerRadius = cell.profileImage.frame.height/2
+            if availabilityArray[indexPath.row].username != "Anonymous" {
+                if let cachedImage = imageCache.object(forKey: availabilityArray[indexPath.row].email as NSString) as? UIImage {
+                    cell.profileImage.image = cachedImage
+                    return cell
+                }
+                print(availabilityArray[indexPath.row].username)
+                print(indexPath.row)
+                print("changing to not anon")
+                firebaseManager.loadImage(user: availabilityArray[indexPath.row].email) { img in
+                    DispatchQueue.main.async {
+                        self.imageCache.setObject(img, forKey: self.availabilityArray[indexPath.row].email as NSString)
+                        cell.profileImage.image = img
+                        cell.profileImage.layer.cornerRadius = cell.profileImage.frame.height/5
+                    }
+                }
             }
             
-            
             return cell
+            
         } else {
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "DefaultCell", for: indexPath)
@@ -159,14 +173,6 @@ extension HomeVC : UITableViewDataSource {
         }
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        UIView.animate(
-            withDuration: 2.0,
-            delay: 1.0 * Double(indexPath.row),
-                        animations: {
-                            cell.alpha = 1
-                    })
-    }
     
     @objc private func handleLongPress(sender: UILongPressGestureRecognizer) {
         if sender.state == .began {
@@ -203,22 +209,17 @@ extension HomeVC: CLLocationManagerDelegate {
             self.location = location
             self.lat = location.coordinate.latitude
             self.lon = location.coordinate.longitude
-            loadData()
-            toDetails.isEnabled = true
-            toMap.isEnabled = true
             manager.stopUpdatingLocation()
+            toDetails.isEnabled = true
         }
     }
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        if manager.authorizationStatus == .denied {
-            toDetails.isEnabled = false
-            toMap.isEnabled = false
-        } else {
+        if manager.authorizationStatus != .denied {
             toDetails.isEnabled = true
-            toMap.isEnabled = true
+        } else {
+            toDetails.isEnabled = false
         }
-        tableView.reloadData()
     }
 
     

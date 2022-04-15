@@ -37,7 +37,9 @@ class DetailsVC: UIViewController {
                             self.address = firstAddress.thoroughfare ?? "empty"
                             print(self.address)
                             self.delegate!.pass(availability: Availability(email: email, username: self.currentUser.username, targetLanguage: language, locationName: location, address: self.address, arrivalTime: Date().timeIntervalSince1970, departureTime: self.selectedDepartureDate, latitude: geolocation.coordinate.latitude, longitude: geolocation.coordinate.longitude, doc: nil))
-                            self.dismiss(animated: true)
+                            DispatchQueue.main.async {
+                                self.dismiss(animated: true)
+                            }
                         }
                     }
                 })
