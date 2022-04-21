@@ -10,6 +10,7 @@
 * Each user who signs up has the capability to post if they are studying, and where they are studying.
 * Other users can check the map if there are any other language learners who are studying.
 * MVC Design Pattern
+* Available in the App Store.
 
 ## Frameworks
 * UIKit
