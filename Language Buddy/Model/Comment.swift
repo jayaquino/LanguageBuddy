@@ -8,6 +8,7 @@
 import Foundation
 
 struct Comment {
+    let email: String
     let username: String
     let message: String
 }

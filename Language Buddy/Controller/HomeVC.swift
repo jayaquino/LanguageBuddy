@@ -8,6 +8,7 @@
 import UIKit
 import CoreLocation
 import MapKit
+import FirebaseMessaging
 
 class HomeVC: UIViewController {
 
@@ -15,65 +16,62 @@ class HomeVC: UIViewController {
     @IBOutlet weak var toDetails: UIBarButtonItem!
     @IBOutlet weak var toMap: UIBarButtonItem!
     
-    private let locationManager = CLLocationManager()
     private let time = Date()
     private let formatter = DateFormatter()
-    private var lat = Double()
-    private var lon = Double()
-    private var location = CLLocation()
-    private let firebaseManager = FirebaseManager()
     private var availabilityArray : [Availability] = []
+
+    let imageCache = NSCache<AnyObject, AnyObject>()
+    
+    let firebaseManager = FirebaseManager.shared
+    let locationManager = LocationManager.shared
+    
+    var homeCellViewModel = HomeCellViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Location Manager Setup
+        locationManager.managerSetup()
+        locationManager.locationManagerDelegate = self
         
-        // Core Location
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.delegate = self
-        locationManager.startUpdatingLocation()
-        locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
-        
-        // Table View
+        // Table View Setup
         tableView.delegate = self
         tableView.dataSource = self
+        homeCellViewModel.homeCellViewModelDelegate = self
+        homeCellViewModel.loadAvailability()
         tableView.rowHeight = 200
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(sender:)))
         tableView.addGestureRecognizer(longPress)
         
-        // Nib
+        // Nib Setup
         tableView.register(UINib(nibName: "AvailabilityCell", bundle: nil), forCellReuseIdentifier: "ReusableCell")
-        
-        // UI Handling
-        toMap.isEnabled = false
         toDetails.isEnabled = false
+        toMap.isEnabled = false
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        // Firebase
-        loadData()
-    }
-    
-    func loadData(){
-        
-        firebaseManager.loadAvailability { availabilities in
-            var availabilitiesVariable = availabilities
-            for (i,availability) in availabilities.enumerated().reversed() {
-                let cellLocation = CLLocation(latitude: (availability.latitude), longitude: availability.longitude)
-                let distance = self.location.distance(from: cellLocation)
-                if distance > 10000 {
-                    availabilitiesVariable.remove(at: i)
-                }
-            }
-            self.availabilityArray = availabilitiesVariable
-            self.tableView.reloadData()
+        let locationAuthStatus = locationManager.getAuthStatus()
+        switch locationAuthStatus {
+        case .notDetermined:
+            locationManager.requestAuth()
+        case .restricted:
+            break
+        case .denied:
+            locationManager.requestAuth()
+        case .authorizedAlways:
+            break
+        case .authorizedWhenInUse:
+            break
+        case .authorized:
+            break
         }
+        tableView.reloadData()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == K.toDetails {
             let destinationVC = segue.destination as! DetailsVC
+            destinationVC.location = locationManager.getLocation()
             destinationVC.delegate = self
-            destinationVC.location = location
         }
         else if segue.identifier == K.toComments {
             if let sender = sender as? IndexPath {
@@ -83,10 +81,9 @@ class HomeVC: UIViewController {
         }
         else if segue.identifier == K.toMap {
             let destinationVC = segue.destination as! MapVC
-            destinationVC.location = self.location
+            destinationVC.location = locationManager.getLocation()
             destinationVC.availabilityArray = self.availabilityArray
         }
-        
     }
 }
 
@@ -115,15 +112,18 @@ extension HomeVC : UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        if toDetails.isEnabled {
+        if toDetails.isEnabled && toMap.isEnabled {
             // Location
             let cellLocation = CLLocation(latitude: (availabilityArray[indexPath.row].latitude), longitude: availabilityArray[indexPath.row].longitude)
-            let distance = self.location.distance(from: cellLocation)
+            let location = locationManager.getLocation()
+            let distance = location.distance(from: cellLocation)
             
             // Cell Details
             let cell = tableView.dequeueReusableCell(withIdentifier: "ReusableCell", for: indexPath) as! AvailabilityCell
             cell.userLabel.text = availabilityArray[indexPath.row].username
             cell.languageLabel.text = availabilityArray[indexPath.row].targetLanguage
+            cell.profileImage.image = UIImage(systemName: "person")
+            cell.profileImage.layer.cornerRadius = cell.profileImage.frame.height/5
             let formatter = DateFormatter()
             formatter.dateFormat = "HH:mm"
             let t0 = formatter.string(from:Date(timeIntervalSince1970: availabilityArray[indexPath.row].arrivalTime))
@@ -132,14 +132,27 @@ extension HomeVC : UITableViewDataSource {
             cell.timeLabel.text =  time
             cell.locationLabel.text = availabilityArray[indexPath.row].locationName
             cell.distanceLabel.text = String(round(CGFloat(distance)*10)/10) + " m"
-            
             cell.languageLabel.numberOfLines = 0
             cell.userLabel.numberOfLines = 0
             cell.timeLabel.numberOfLines = 0
             
             cell.selectionStyle = .none
             
+            if availabilityArray[indexPath.row].username != "Anonymous" {
+                if let cachedImage = imageCache.object(forKey: availabilityArray[indexPath.row].email as NSString) as? UIImage {
+                    cell.profileImage.image = cachedImage
+                    return cell
+                }
+                firebaseManager.loadImage(user: availabilityArray[indexPath.row].email) { img in
+                    DispatchQueue.main.async {
+                        self.imageCache.setObject(img, forKey: self.availabilityArray[indexPath.row].email as NSString)
+                        cell.profileImage.image = img
+                        cell.profileImage.layer.cornerRadius = cell.profileImage.frame.height/5
+                    }
+                }
+            }
             return cell
+            
         } else {
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "DefaultCell", for: indexPath)
@@ -150,15 +163,6 @@ extension HomeVC : UITableViewDataSource {
         }
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        UIView.animate(
-            withDuration: 2.0,
-            delay: 1.0 * Double(indexPath.row),
-                        animations: {
-                            cell.alpha = 1
-                    })
-    }
-    
     @objc private func handleLongPress(sender: UILongPressGestureRecognizer) {
         if sender.state == .began {
             let touchPoint = sender.location(in: tableView)
@@ -166,11 +170,17 @@ extension HomeVC : UITableViewDataSource {
                 if tableView.cellForRow(at: indexPath) is AvailabilityCell {
                     tableView.deselectRow(at: indexPath, animated: true)
                     openmaps(latitude: availabilityArray[indexPath.row].latitude, longitude: availabilityArray[indexPath.row].longitude)
+                } else {
+                    locationManager.requestAuth()
                 }
             }
         }
     }
     
+    /// Opens Apple Maps During Long Press
+    /// - Parameters:
+    ///   - latitude: The poster's latitude location
+    ///   - longitude: The poster's longitude location
     func openmaps(latitude: Double, longitude: Double) {
         let latitude: CLLocationDegrees = Double(latitude)
         let longitude: CLLocationDegrees = Double(longitude)
@@ -187,42 +197,45 @@ extension HomeVC : UITableViewDataSource {
     }
 }
 
-//MARK: - CLLocationManagerDelegate
-extension HomeVC: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last{
-            self.location = location
-            self.lat = location.coordinate.latitude
-            self.lon = location.coordinate.longitude
-            loadData()
-            toDetails.isEnabled = true
-            toMap.isEnabled = true
-            manager.stopUpdatingLocation()
-        }
-    }
-    
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        if manager.authorizationStatus == .denied {
-            toDetails.isEnabled = false
-            toMap.isEnabled = false
-        } else {
-            toDetails.isEnabled = true
-            toMap.isEnabled = true
-        }
-        tableView.reloadData()
-    }
-
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print(error)
-    }
-}
-
 //MARK: - Protocols
 extension HomeVC : isAbleToReceiveData {
     func pass(availability: Availability) {
-        firebaseManager.addAvailability(availability: availability) {
-            
+        homeCellViewModel.addAvailability(availability: availability) {
         }
+    }
+}
+
+//MARK: - LocationManager Delegate
+extension HomeVC: LocationManagerDelegate {
+    func didChangeAuthorization(manager: CLLocationManager) {
+        let status = manager.authorizationStatus
+        switch status {
+        case .notDetermined:
+            toMap.isEnabled = false
+            toDetails.isEnabled = false
+        case .restricted:
+            toMap.isEnabled = false
+            toDetails.isEnabled = false
+        case .denied:
+            toMap.isEnabled = false
+            toDetails.isEnabled = false
+        case .authorizedAlways:
+            toMap.isEnabled = true
+            toDetails.isEnabled = true
+        case .authorizedWhenInUse:
+            toMap.isEnabled = true
+            toDetails.isEnabled = true
+        case .authorized:
+            toMap.isEnabled = true
+            toDetails.isEnabled = true
+        }
+        tableView.reloadData()
+    }
+}
+
+extension HomeVC: HomeCellViewModelDelegate {
+    func didFinishFetchingAvailability(availabilities: [Availability]) {
+        availabilityArray = availabilities
+        tableView.reloadData()
     }
 }

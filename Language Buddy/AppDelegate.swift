@@ -7,6 +7,8 @@
 
 import UIKit
 import Firebase
+import FirebaseMessaging
+import UserNotifications
 import IQKeyboardManagerSwift
 
 @main
@@ -21,6 +23,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         IQKeyboardManager.shared.enableAutoToolbar = false
         IQKeyboardManager.shared.shouldResignOnTouchOutside = true
         
+        // Push Notification
+        UNUserNotificationCenter.current().delegate = self
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { success, error in
+            guard success else {
+                if let e = error {
+                    print(e.localizedDescription)
+                }
+                return
+            }
+            print("Sucess in APNS registry")
+        }
+        
+        application.registerForRemoteNotifications()
+    
         return true
     }
 
@@ -42,3 +58,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+extension AppDelegate : MessagingDelegate {
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        messaging.token { token, error in
+            guard let token = token else {
+                if let e = error {
+                    print(e.localizedDescription)
+                }
+                return
+            }
+            
+        }
+    }
+    
+}
+
+extension AppDelegate : UNUserNotificationCenterDelegate {
+    
+}

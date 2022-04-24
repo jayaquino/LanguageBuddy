@@ -31,6 +31,9 @@
 		5256588C27EDA521001961B2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5256588B27EDA521001961B2 /* GoogleService-Info.plist */; };
 		5256588E27EDA664001961B2 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5256588D27EDA664001961B2 /* Protocols.swift */; };
 		5256589A27EDC716001961B2 /* CommentsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5256589927EDC716001961B2 /* CommentsVC.swift */; };
+		528913052809830E007EF13A /* HomeCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528913042809830E007EF13A /* HomeCellViewModel.swift */; };
+		5289130728098857007EF13A /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5289130628098857007EF13A /* LocationManager.swift */; };
+		52FF950F28154C0D00E9DB87 /* CommentsCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF950E28154C0D00E9DB87 /* CommentsCellViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +47,7 @@
 		5233DBC627F0611900DE821F /* CurrentUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUser.swift; sourceTree = "<group>"; };
 		5233DBC827F0728600DE821F /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
 		5233DBC927F0728600DE821F /* MessageCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageCell.xib; sourceTree = "<group>"; };
+		523458F127F9413B00652F25 /* Language Buddy.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Language Buddy.entitlements"; sourceTree = "<group>"; };
 		5256586927ED943F001961B2 /* Language Buddy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Language Buddy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5256586C27ED943F001961B2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5256586E27ED943F001961B2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -59,6 +63,9 @@
 		5256588B27EDA521001961B2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5256588D27EDA664001961B2 /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
 		5256589927EDC716001961B2 /* CommentsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsVC.swift; sourceTree = "<group>"; };
+		528913042809830E007EF13A /* HomeCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCellViewModel.swift; sourceTree = "<group>"; };
+		5289130628098857007EF13A /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		52FF950E28154C0D00E9DB87 /* CommentsCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsCellViewModel.swift; sourceTree = "<group>"; };
 		B1A0897157BD20F342857635 /* Pods_Language_Buddy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Language_Buddy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C236538CD530EE47D89EB1E9 /* Pods-Language Buddy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language Buddy.debug.xcconfig"; path = "Target Support Files/Pods-Language Buddy/Pods-Language Buddy.debug.xcconfig"; sourceTree = "<group>"; };
 		D734970C6D76CA49514B0E08 /* Pods-Language Buddy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Language Buddy.release.xcconfig"; path = "Target Support Files/Pods-Language Buddy/Pods-Language Buddy.release.xcconfig"; sourceTree = "<group>"; };
@@ -106,9 +113,12 @@
 		5256586B27ED943F001961B2 /* Language Buddy */ = {
 			isa = PBXGroup;
 			children = (
+				523458F127F9413B00652F25 /* Language Buddy.entitlements */,
 				5256586C27ED943F001961B2 /* AppDelegate.swift */,
 				5256586E27ED943F001961B2 /* SceneDelegate.swift */,
+				52891300280970A1007EF13A /* Managers */,
 				5256588427ED9632001961B2 /* Model */,
+				52891303280982EE007EF13A /* ViewModel */,
 				5256588327ED9624001961B2 /* View */,
 				5256588227ED961B001961B2 /* Controller */,
 				5256587527ED9445001961B2 /* Assets.xcassets */,
@@ -150,12 +160,29 @@
 			isa = PBXGroup;
 			children = (
 				5256588527ED97D0001961B2 /* Availability.swift */,
-				5256588927EDA4A2001961B2 /* FirebaseManager.swift */,
 				5256588D27EDA664001961B2 /* Protocols.swift */,
 				52045A1627F1AC25008A2B81 /* Comment.swift */,
 				5233DBC627F0611900DE821F /* CurrentUser.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		52891300280970A1007EF13A /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				5256588927EDA4A2001961B2 /* FirebaseManager.swift */,
+				5289130628098857007EF13A /* LocationManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		52891303280982EE007EF13A /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				528913042809830E007EF13A /* HomeCellViewModel.swift */,
+				52FF950E28154C0D00E9DB87 /* CommentsCellViewModel.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		6E6B2EB9EF78AC53FC62925F /* Frameworks */ = {
@@ -285,6 +312,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5256587127ED943F001961B2 /* HomeVC.swift in Sources */,
+				528913052809830E007EF13A /* HomeCellViewModel.swift in Sources */,
 				5256588827ED98B9001961B2 /* DetailsVC.swift in Sources */,
 				5256588A27EDA4A2001961B2 /* FirebaseManager.swift in Sources */,
 				5256588127ED95BA001961B2 /* K.swift in Sources */,
@@ -299,7 +327,9 @@
 				5233DBCA27F0728600DE821F /* MessageCell.swift in Sources */,
 				52045A1427F19563008A2B81 /* AvailabilityCell.swift in Sources */,
 				5233DBC527F05E5700DE821F /* PreferencesVC.swift in Sources */,
+				52FF950F28154C0D00E9DB87 /* CommentsCellViewModel.swift in Sources */,
 				5233DBC727F0611900DE821F /* CurrentUser.swift in Sources */,
+				5289130728098857007EF13A /* LocationManager.swift in Sources */,
 				5233DBC327F0507500DE821F /* UserInfoVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -446,6 +476,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Language Buddy/Language Buddy.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = V89Z8LQWPX;
@@ -463,7 +494,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "naquinojr.Language-Buddy";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -478,6 +509,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Language Buddy/Language Buddy.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = V89Z8LQWPX;
@@ -495,7 +527,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "naquinojr.Language-Buddy";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

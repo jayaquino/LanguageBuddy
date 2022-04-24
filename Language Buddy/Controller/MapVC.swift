@@ -12,9 +12,10 @@ class MapVC: UIViewController {
 
     @IBOutlet weak var mapView: MKMapView!
     
-    var location : CLLocation?
     var availabilityArray : [Availability]?
     private var annotations = [MKPointAnnotation()]
+    
+    var location : CLLocation?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,6 +24,7 @@ class MapVC: UIViewController {
             let viewRegion = MKCoordinateRegion(center: safeLocation.coordinate, latitudinalMeters: 7500, longitudinalMeters: 7500)
             mapView.setRegion(viewRegion, animated: false)
         }
+        
         
         if let safeAvailabilityArray = availabilityArray {
             for userAvailability in safeAvailabilityArray {

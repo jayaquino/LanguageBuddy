@@ -7,6 +7,7 @@
 
 import UIKit
 import Firebase
+import IQKeyboardManagerSwift
 
 class CommentsVC: UIViewController {
 
@@ -15,11 +16,11 @@ class CommentsVC: UIViewController {
     @IBOutlet weak var deleteButton: UIBarButtonItem!
     
     let currentUser = CurrentUser()
-    
+    var commentsCellViewModel = CommentsCellViewModel()
     
     @IBAction func sendPressed(_ sender: UIButton) {
         if textField.text != "" {
-            firebaseManager.addComment(comment: Comment(username: currentUser.username, message: textField.text!), document: (availability?.doc!)!) {
+            commentsCellViewModel.addComment(comment: Comment(email: currentUser.email, username: currentUser.username, message: textField.text!), document: (availability?.doc!)!) {
             }
             textField.text = ""
         }
@@ -27,17 +28,20 @@ class CommentsVC: UIViewController {
     
     @IBAction func deletePressed(_ sender: Any) {
         if let safeAvailability = availability?.doc {
-            firebaseManager.deleteAvailability(documentID: safeAvailability)
+            firebaseManager.deleteData(documentID: safeAvailability, collectionName: K.FStore.availabilityCollectionName)
             self.navigationController?.popToRootViewController(animated: true)
         }
     }
     
-    let firebaseManager = FirebaseManager()
+    let firebaseManager = FirebaseManager.shared
     var availability : Availability?
     var comments : [Comment] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    
+        commentsCellViewModel.commentsCellViewModelDelegate = self
+        
         if let email = Auth.auth().currentUser?.email, let availabilityEmail = availability?.email {
             if email == availabilityEmail {
                 deleteButton.isEnabled = true
@@ -47,13 +51,9 @@ class CommentsVC: UIViewController {
         }
         title = availability?.locationName
         tableView.dataSource = self
-        tableView.transform = CGAffineTransform(scaleX: 1, y: -1);
         tableView.register(UINib(nibName: "MessageCell", bundle: nil), forCellReuseIdentifier: "ReusableCell")
         textField.delegate = self
-        firebaseManager.loadComment(document: (availability?.doc)!) { comments in
-            self.comments = comments
-            self.tableView.reloadData()
-        }
+        commentsCellViewModel.loadComment(document: (availability?.doc)!)
     }
     
 }
@@ -70,19 +70,29 @@ extension CommentsVC : UITableViewDataSource {
         cell.usernameLabel.text = comments[(comments.count-1) - indexPath.row].username
         cell.messageLabel.text = comments[(comments.count-1) - indexPath.row].message
         cell.messageLabel.numberOfLines = 0
-        cell.transform = CGAffineTransform(scaleX: 1, y: -1)
+        
+        if comments[(comments.count-1) - indexPath.row].email == currentUser.email {
+            cell.usernameLabel.backgroundColor = .systemBlue
+        }
+        
         return cell
     }
 }
 
 extension CommentsVC : UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        firebaseManager.addComment(comment: Comment(username: currentUser.username, message: textField.text!), document: (availability?.doc!)!) {
-            print("comment added")
+        commentsCellViewModel.addComment(comment: Comment(email: currentUser.email, username: currentUser.username, message: textField.text!), document: (availability?.doc!)!) {
         }
         textField.text = ""
         view.endEditing(true)
         resignFirstResponder()
         return false
+    }
+}
+
+extension CommentsVC : CommentsCellViewModelDelegate {
+    func didFinishFetchingComments(comments: [Comment]) {
+        self.comments = comments
+        tableView.reloadData()
     }
 }
