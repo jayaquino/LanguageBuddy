@@ -17,11 +17,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Check Authentication
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
-        do {
-        try Auth.auth().signOut()
-        } catch{
-            print(error)
-        }
+//        do {
+//        try Auth.auth().signOut()
+//        } catch{
+//            print(error)
+//        }
         
         if (Auth.auth().currentUser != nil) && (Auth.auth().currentUser?.displayName != nil){
             let authVC = storyboard.instantiateViewController(identifier: "homeVC")
