@@ -20,11 +20,7 @@ class CommentsVC: UIViewController {
     
     @IBAction func sendPressed(_ sender: UIButton) {
         if textField.text != "" {
-<<<<<<< HEAD
             commentsCellViewModel.addComment(comment: Comment(email: currentUser.email, username: currentUser.username, message: textField.text!), document: (availability?.doc!)!) {
-=======
-            firebaseManager.addComment(comment: Comment(email: currentUser.email, username: currentUser.username, message: textField.text!), document: (availability?.doc!)!) {
->>>>>>> 37bb767f6a67122252c62e19361220fdca2fa91b
             }
             textField.text = ""
         }
@@ -44,11 +40,8 @@ class CommentsVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     
-<<<<<<< HEAD
         commentsCellViewModel.commentsCellViewModelDelegate = self
         
-=======
->>>>>>> 37bb767f6a67122252c62e19361220fdca2fa91b
         if let email = Auth.auth().currentUser?.email, let availabilityEmail = availability?.email {
             if email == availabilityEmail {
                 deleteButton.isEnabled = true
@@ -79,11 +72,7 @@ extension CommentsVC : UITableViewDataSource {
         cell.messageLabel.numberOfLines = 0
         
         if comments[(comments.count-1) - indexPath.row].email == currentUser.email {
-<<<<<<< HEAD
             cell.usernameLabel.backgroundColor = .systemBlue
-=======
-            cell.usernameLabel.backgroundColor = .systemPink
->>>>>>> 37bb767f6a67122252c62e19361220fdca2fa91b
         }
         
         return cell
@@ -92,12 +81,7 @@ extension CommentsVC : UITableViewDataSource {
 
 extension CommentsVC : UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-<<<<<<< HEAD
         commentsCellViewModel.addComment(comment: Comment(email: currentUser.email, username: currentUser.username, message: textField.text!), document: (availability?.doc!)!) {
-=======
-        firebaseManager.addComment(comment: Comment(email: currentUser.email, username: currentUser.username, message: textField.text!), document: (availability?.doc!)!) {
-            print("comment added")
->>>>>>> 37bb767f6a67122252c62e19361220fdca2fa91b
         }
         textField.text = ""
         view.endEditing(true)

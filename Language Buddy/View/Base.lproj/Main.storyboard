@@ -176,10 +176,7 @@
                     <connections>
                         <outlet property="tableView" destination="kbc-r1-7IT" id="8v6-K4-2nT"/>
                         <outlet property="toDetails" destination="kM3-LA-NO0" id="qAG-uW-EeK"/>
-<<<<<<< HEAD
                         <outlet property="toMap" destination="4HQ-7d-ZaL" id="9FJ-Tq-Gyn"/>
-=======
->>>>>>> 37bb767f6a67122252c62e19361220fdca2fa91b
                         <segue destination="VaB-rG-qtV" kind="show" identifier="toComments" id="krn-1x-y34"/>
                     </connections>
                 </viewController>

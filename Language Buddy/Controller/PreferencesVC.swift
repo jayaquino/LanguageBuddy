@@ -12,11 +12,8 @@ class PreferencesVC: UIViewController, UINavigationControllerDelegate {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var anonymousSwitch: UISwitch!
     
-<<<<<<< HEAD
     let firebaseManager = FirebaseManager.shared
-=======
-    let firebaseManager = FirebaseManager()
->>>>>>> 37bb767f6a67122252c62e19361220fdca2fa91b
+
     var imagePicker = UIImagePickerController()
     
     @IBAction func anonymousSwitchPressed(_ sender: UISwitch) {
@@ -63,14 +60,7 @@ class PreferencesVC: UIViewController, UINavigationControllerDelegate {
             imagePicker.delegate = self
             imagePicker.sourceType = .savedPhotosAlbum
             imagePicker.allowsEditing = false
-<<<<<<< HEAD
             present(imagePicker, animated: true, completion: nil)
-=======
-            
-            present(imagePicker, animated: true, completion: nil)
-            
-            
->>>>>>> 37bb767f6a67122252c62e19361220fdca2fa91b
         }
         
     }
